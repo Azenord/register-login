@@ -7,12 +7,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('../views/Home.vue')
-  },
-  {
-    path: '/about',
-    name: 'about',
-    component: () => import('../views/AboutView.vue')
+    component: () => import('../views/Home.vue'),
   },
   {
     path: '/register',
@@ -24,6 +19,22 @@ const routes = [
     name: 'login',
     component: () => import('../views/authentication/Login.vue'),
   },
+  {
+    path: '/users',
+    name: 'users',
+    component: () => import('../views/admin/Users.vue'),
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('../views/Profile.vue'),
+  },
+  {
+    path: '/requests',
+    name: 'request',
+    component: () => import('../views/requests/AllRequests.vue'),
+  },
+  
 ]
 
 const router = new VueRouter({
@@ -31,7 +42,6 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-
 
 export default router
 

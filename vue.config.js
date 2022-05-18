@@ -1,13 +1,9 @@
-const { defineConfig } = require('@vue/cli-service')
-module.exports = defineConfig({
-  /*devServer:{
-    "host": 'localhost',
-    "port": 3000,
-    allowedHosts:[
-      '*'
-    ]
-  },*/
+
+module.exports ={
   transpileDependencies: [
     'vuetify'
-  ]
-})
+  ],
+  devServer:{
+    port: 5000
+  }
+}

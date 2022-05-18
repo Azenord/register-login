@@ -1,14 +1,19 @@
 <template>
     <v-layout align-center justify-center row fill-height>
-        <v-col :cols="10"  md="4" offset="1" offset-md="0">
+        <v-col :cols="10"  md="6" offset="1" offset-md="0">
             <v-card shaped elevation="20" class="px-16 pt-8 pb-16">
-            <v-card-title class="text-h4 pl-0">Регистрация</v-card-title>
+            <v-card-title class="pl-0
+              text-h5            
+              text-md-h3         
+              text-lg-h2         
+              text-xl-h2
+            ">Регистрация</v-card-title>
             <v-alert dense elevation="11" type="error" v-if="saveIsOk === false">
                 Упс! {{ errorMessage }}
             </v-alert>
             <v-alert dense elevation="11" type="success" v-if="saveIsOk">
                 Регистрация прошла успешно!
-            </v-alert>
+            </v-alert>            
                 <v-form>
                     <v-text-field
                         v-model="username"
@@ -19,9 +24,22 @@
                         @blur="$v.username.$touch()"
                     ></v-text-field>
                     <v-text-field
+                        v-model="firstName"
+                        label="Имя"
+                        required
+                    ></v-text-field>
+                    <v-text-field
+                        v-model="surName"
+                        label="Фамилия"
+                        required
+                    ></v-text-field>
+                    <v-text-field
                         v-model="pass"
                         :append-icon="showPass1 ? 'mdi-eye' : 'mdi-eye-off'"
+                        :rules="[rules.required, rules.min]"
                         :type="showPass1 ? 'text' : 'password'"
+                        name="pass"
+                        hint="Пароль больше 4 символов"
                         label="Пароль"
                         required
                         @click:append="showPass1 = !showPass1"
@@ -30,7 +48,11 @@
                         v-model="passConfirm"
                         :append-icon="showPass2 ? 'mdi-eye' : 'mdi-eye-off'"
                         :type="showPass2? 'text' : 'password'"
+                        :rules="[rules.required, rules.min, rules.passMatch]"
                         label="Подтверждение пароля"
+                        name="passConfirm"
+                        hint="Пароль больше 4 символов"
+                        value=""
                         required
                         class="input-group--focused"
                         @click:append="showPass2 = !showPass2"
@@ -57,10 +79,9 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, email } from 'vuelidate/lib/validators'
-import axios from 'axios'
-
+import authApi from "@/api/authApi";
 export default{
-    name: 'Registration',
+    name: 'Register',
     mixins: [validationMixin],
     validations: {
         username: { required, maxLength: maxLength(25) },
@@ -89,6 +110,8 @@ export default{
             email: "",
             pass: "",
             passConfirm: "",
+            firstName: "",
+            surName: "",
             showPass1: false,
             showPass2: false,
             saveIsOk: null,
@@ -102,10 +125,23 @@ export default{
     },
     methods: {
     async register () {
-        console.log(JSON.stringify({username: this.username,pass: this.pass,passConfirm: this.passConfirm,email:this.email}))
-        axios.post('http://localhost:8080/registration', {
-        jsonData: JSON.stringify({username: this.username,pass: this.pass,passConfirm: this.passConfirm,email:this.email}),withCredentials: false,
-        })  
+      try{
+        const response = await authApi.register({userName: this.username,
+          pass: this.pass, passConfirm: this.passConfirm, email: this.email,firstName:this.firstName,surName:this.surName})
+        if(response.ok) {
+          this.saveIsOk = true
+          await this.$router.push("/login")
+        }
+      }
+      catch (e) {
+        const body = e.body
+        switch (body.subCode){
+          case 1003: this.errorMessage = 'Email ' + this.email + ' уже занят!'; break
+          case 1004: this.errorMessage = 'Имя пользователя ' + this.username + ' уже занято!'; break
+          case 1005: this.errorMessage = 'Пароль и подтверждения пароля не совпдаают!'; break;
+        }
+        this.saveIsOk = false;
+      }
     }
   }
 }
