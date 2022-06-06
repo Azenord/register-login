@@ -18,10 +18,22 @@
         </p>
         <p v-else style="color:green">
           Выполнено
-        </p>
+        </p> 
+        
       </v-card-text>
-      
+       <v-card-actions>
+        <v-btn
+          color="green"
+          style="color:white;"
+          class="justufy-center"
+          @click="change"
+          :style="{left: '50%', transform:'translateX(-50%)'}"
+        >
+           Изменить
+        </v-btn> 
+      </v-card-actions>
     </v-card>
+    
   </v-flex>
 </v-layout>
 </v-container>

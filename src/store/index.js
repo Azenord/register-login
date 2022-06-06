@@ -39,7 +39,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         commit('auth_request')
         
-        axios({url: '*/login',data:{
+        axios({url: 'http://195.122.251.100:8080/login',data:{
           username: user.username,
           password: user.password
         },header:{

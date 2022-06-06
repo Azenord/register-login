@@ -33,6 +33,7 @@
                         label="Фамилия"
                         required
                     ></v-text-field>
+                    
                     <v-text-field
                         v-model="pass"
                         :append-icon="showPass1 ? 'mdi-eye' : 'mdi-eye-off'"

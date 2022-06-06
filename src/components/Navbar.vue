@@ -61,6 +61,13 @@
               <v-list-item-title>Список пользователей</v-list-item-title>
             </v-list-item>
 
+            <v-list-item to="/equipment">
+              <v-list-item-icon>
+                <v-icon>mdi-projector-screen</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Оборудование</v-list-item-title>
+            </v-list-item>
+
             <v-list-item to="/profile">
               <v-list-item-icon>
                 <v-icon>mdi-account-settings</v-icon>
