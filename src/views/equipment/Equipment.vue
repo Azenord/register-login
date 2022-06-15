@@ -1,74 +1,99 @@
 <template>
-
-<v-container grid-list-md>
-<v-col
-          cols="12"
-          sm="6"
-          md="3"
-        >     
-            <v-text-field
-            label="type"
-            solo
-            outlined
-          ></v-text-field>
-          <v-btn
-                        color="warning"
-                        @click="getEquipSort"
-                        large
-                    >
-                        Фильтровать
-                    </v-btn>
-                    </v-col>   
-<v-layout row wrap>
-
-  <v-flex  v-for="equip in equipData" :key="equip.name" xs12 sm4>
-    <v-card class="mt-5">
-      <v-card-title class="justify-center">
-        <h1>{{equip.name}}</h1>
-      </v-card-title>
-      <v-card-text>
-        <p>
-          Тип: {{equip.type}}
-        </p>
-        <p>
-          Количество: {{equip.count}}
-        </p>
-        <p>
-          Описание: {{equip.description}}
-        </p>
-      </v-card-text>
-    </v-card>
-  </v-flex>
-</v-layout>
-</v-container>
+  <v-container fl>
+    <v-row justify="center">
+      <v-col cols="6">
+        <v-card elevation="0" outlined class="mb-6">
+          <v-card-title class="text-h4">
+            <b>Список оборудования</b>
+            <v-spacer></v-spacer>
+            <v-card elevation="0" outlined class="px-3 py-3">
+              
+              <v-text-field
+                  outlined
+                  append-icon="mdi-magnify"
+                  v-model="searchArg"
+                  label="Укажите тип"
+                  single-line
+                  hide-details
+                  @click:append="search"
+              ></v-text-field>
+            </v-card>
+          </v-card-title>
+        </v-card>
+        
+        <equip-list :equipment="equipment"/>
+      <v-btn v-if="showBtnPagination" class="more" @click="loadMore()">
+      Ещё
+      </v-btn>
+      </v-col>
+      
+    </v-row>
+    
+  </v-container>
+  
 </template>
 <script>
+import EquipList from "@/components/EquipList";
 import equipmentApi from '@/api/equipmentApi';
 export default{
-  mounted(){
-    this.getEquip();
+  name: "Equipment",
+  components: {
+    EquipList
+  },
+  async created() {
+    try{
+      const response = await equipmentApi.getEquipment()
+      this.equipment = response.data
+      console.log(this.equipment)
+      this.showBtnPagination = this.equpment.length === 10 ? true : false
+    }catch (e) {
+      console.log(e)
+    }
   },
   data(){
     return{
-    type: '',
-    equipData: Array,
+      equipment: Array,
+      searchArg: '',
+      showBtnPagination: false,
+      page: 0
     }
   },
   methods:{
-    async getEquip(){
-      const equip = await equipmentApi.getEquipment();
-      this.equipData = equip.data
+    async search() {
+      const response = await equipmentApi.getEquipmentSort(this.searchArg)
+      this.equipment = response.data
+      console.log(this.equpment);
     },
-    async getEquipSort(){
-      const equip = await equipmentApi.getEquipmentSort({type:this.type});
-      this.equipData = equip.data
+    async loadEquip(){
+      try{
+        const response = await equipmentApi.getEquipment(this.page)
+        return response.data
+      }catch (e) {
+        console.log(e)
+        await this.$router.push('/')
+      }
+    },
+    async loadMore(){
+      try{
+        this.page++
+        const addEquipment = await this.loadEquip()
+        this.equipment = this.equipment.concat(addEquipment)
+        
+        if(addEqupment.length === 10)
+          this.showBtnPagination = true
+        else
+          this.showBtnPagination = false
+      }catch (e) {
+        console.log(e)
+        await this.$router.push('/')
+      }
     }
   }
 }
 </script>
 <style scoped>
-p{
-  text-align: center;
-  font-size: 2em;
+.more{
+  width:100%;
+  margin-top:5px;
 }
 </style>

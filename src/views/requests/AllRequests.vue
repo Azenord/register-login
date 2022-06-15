@@ -1,65 +1,97 @@
 <template>
-<v-container grid-list-md>
-<v-layout row wrap>
-  <v-flex  v-for="request in requests" :key="request.id" xs12 sm4 class="pl-12">
-    <v-card class="mt-5">
-      <v-card-title class="justify-center">
-        <h2>{{request.author.firstName}} {{request.author.surName}}</h2>
-      </v-card-title>
-      <v-card-text>
-        <p>
-          Аудитория: {{request.audience}}
-        </p>
-        <p>
-          Ответственный: {{request.responcible}}
-        </p>
-        <p v-if="request.status != true" style="color:red">
-          Не выполнено
-        </p>
-        <p v-else style="color:green">
-          Выполнено
-        </p> 
+  <v-container fl>
+    <v-row justify="center">
+      <v-col cols="6">
+        <v-card elevation="0" outlined class="mb-6">
+          <v-card-title class="text-h4">
+            <b>Список заявок</b>
+            <v-spacer></v-spacer>
+            <v-card elevation="0" outlined class="px-3 py-3">
+              
+              <v-text-field
+                  outlined
+                  append-icon="mdi-magnify"
+                  v-model="searchArg"
+                  label="Найти заявку"
+                  single-line
+                  hide-details
+                  @click:append="search"
+              ></v-text-field>
+            </v-card>
+          </v-card-title>
+        </v-card>
         
-      </v-card-text>
-       <v-card-actions>
-        <v-btn
-          color="green"
-          style="color:white;"
-          class="justufy-center"
-          @click="change"
-          :style="{left: '50%', transform:'translateX(-50%)'}"
-        >
-           Изменить
-        </v-btn> 
-      </v-card-actions>
-    </v-card>
+        <requests-list :requests="requests"/>
+      <v-btn v-if="showBtnPagination" class="more" @click="loadMore()">
+      Ещё
+      </v-btn>
+      </v-col>
+      
+    </v-row>
     
-  </v-flex>
-</v-layout>
-</v-container>
+  </v-container>
+  
 </template>
 <script>
-import requestsApi from '@/api/requestsApi';
+import RequestsList from "@/components/RequestsList";
+import requestsApi from "@/api/requestsApi";
 export default{
-  mounted(){
-    this.getRequests();
+  name: "Requests",
+  components: {
+    RequestsList
+  },
+  async created() {
+    try{
+      const response = await requestsApi.getRequests()
+      this.requests = response.data
+      this.showBtnPagination = this.requests.length === 10 ? true : false
+    }catch (e) {
+      console.log(e)
+    }
   },
   data(){
     return{
-    requests: Array,
+      requests: Array,
+      searchArg: '',
+      showBtnPagination: true,
+      page: 0
     }
   },
   methods:{
-    async getRequests(){
-      const requestsData = await requestsApi.getRequests();
-      this.requests = requestsData.data
+    async search() {
+      const response = await requestsApi.searchUser(this.searchArg)
+      this.users = response.data
+    },
+    async loadRequests(){
+      try{
+        const response = await requestsApi.getRequests(this.page)
+        return response.data
+      }catch (e) {
+        console.log(e)
+        await this.$router.push('/')
+      }
+    },
+    async loadMore(){
+      try{
+        this.page++
+        const addRequests = await this.loadRequests()
+        this.requests = this.requests.concat(addRequests)
+        
+        if(addRequests.length === 10)
+          this.showBtnPagination = true
+        else
+          this.showBtnPagination = false
+      }catch (e) {
+        console.log(e)
+        await this.$router.push('/')
+      }
     }
   }
 }
 </script>
 <style scoped>
-p{
-  text-align: center;
-  font-size: 1.5em;
+.more{
+  width:100%;
+  margin-top:5px;
 }
 </style>

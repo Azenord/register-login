@@ -4,9 +4,9 @@ import { serverUrl } from "@/api/resource"
 
 
 export default {
-    async getUsers(){
+    async getUsers(page){
         return await axios
-        .get(serverUrl + '/users?size='+1000, { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
+        .get(serverUrl + '/users?page='+page, { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
           .catch(error => console.log(error))
     },
     async getUser(username){
@@ -14,4 +14,19 @@ export default {
         .get(serverUrl + '/users/' + username, { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
           .catch(error => console.log(error))
     },
+    async searchUser(username){
+      return await axios
+      .get(serverUrl + '/users?userName=' + username, { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
+        .catch(error => console.log(error))
+  },
+  async deleteUser(username){
+    return await axios
+    .delete(serverUrl + '/admin/users/' + username, { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
+      .catch(error => console.log(error))
+  },
+  async changeUser(user){
+    return await axios
+    .put(serverUrl + '/admin/users/' + user.userName,user,{ headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
+      .catch(error => console.log(error))
+  },
 }

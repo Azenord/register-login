@@ -40,7 +40,42 @@ const routes = [
     name: 'equipment',
     component: () => import('../views/equipment/Equipment.vue'),
   },
-  
+  ,
+  {
+    path: '/users/:username',
+    name: 'UserProfile',
+    component: () => import('../views/admin/User.vue')
+  },
+  {
+    path: '/users/change/:username',
+    name: 'ChangeUserProfile',
+    component: () => import('../views/admin/ChangeUser.vue')
+  },
+  {
+    path: '/equip/:equipment',
+    name: 'EqupmentProfile',
+    component: () => import('../views/equipment/Equip.vue')
+  },
+  {
+    path: '/equip/change/:equipment',
+    name: 'ChangeEquip',
+    component: () => import('../views/equipment/ChangeEquip.vue')
+  },
+  {
+    path: '/createEquip',
+    name: 'CreateEquip',
+    component: () => import('../views/equipment/CreateEquip.vue')
+  },
+  {
+    path: '/request/:id',
+    name: 'RequestsProfile',
+    component: () => import('../views/requests/Request.vue')
+  },
+  {
+    path: '/request/change/:id',
+    name: 'RequestsProfile',
+    component: () => import('../views/requests/ChangeRequest.vue')
+  },
 ]
 
 const router = new VueRouter({
