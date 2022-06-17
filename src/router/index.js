@@ -76,6 +76,11 @@ const routes = [
     name: 'RequestsProfile',
     component: () => import('../views/requests/ChangeRequest.vue')
   },
+  {
+    path: '/createRequest',
+    name: 'RequestsProfile',
+    component: () => import('../views/requests/CreateRequest.vue')
+  },
 ]
 
 const router = new VueRouter({

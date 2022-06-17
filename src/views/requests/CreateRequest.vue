@@ -1,50 +1,93 @@
 <template>
-<v-layout align-center justify-center row fill-height>
-    <v-container>
-        <v-row>
-            <v-col :cols="10"  md="6" offset="1" offset-md="3">
-            <v-card shaped elevation="8" class="px-16 pt-8 pb-16">
-                <v-card-title class="pl-0
-                text-h4            
-                text-md-h3         
-                text-lg-h2         
-                text-xl-h2 
-                ">Вход</v-card-title>
-                <v-alert dense elevation="11" type="error" v-if="authBody.auth === 'DENIED'">
-                  <strong >Имя пользователя</strong> или <strong>пароль</strong> не совпадают
-                </v-alert>
-                <v-alert dense elevation="11" type="success" v-if="authBody.auth === 'SUCCESS'">
-                  Вход в аккаунт успешно выполнен!
-                </v-alert>
-                <form>
-                    <v-text-field
-                        v-model="username"
-                        :error-messages="usernameErrors"
-                        label="Имя пользователя"
-                        required
-                        @input="$v.username.$touch()"
-                        @blur="$v.username.$touch()"
-                    ></v-text-field>
-                    <v-text-field
-                        v-model="password"
-                        :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
-                        :type="showPass ? 'text' : 'password'"
-                        name="input-10-2"
-                        label="Пароль"
-                        class="input-group--focused"
-                        @click:append="showPass = !showPass"
-                    ></v-text-field>
+ <v-layout align-center justify-center row fill-height>
+        <v-col :cols="10"  md="6" offset="1" offset-md="0">
+            <v-card shaped elevation="20" class="px-16 pt-8 pb-16">
+            <v-card-title class="pl-0
+              text-h6       
+              text-md-h3         
+              text-lg-h2         
+              text-xl-h2
+            ">Создание заявки</v-card-title>
+            <v-card-text class="pl-0
+              text-h6            
+              text-md-h5         
+              text-lg-h4         
+              text-xl-h4
+            ">
+            <v-text-field
+            class="pt-5"
+                v-model="audience"
+                label="Аудитория"
+                outlined
+            ></v-text-field>
+            <v-combobox
+                :items="this.equipment"
+                outlined
+                multiple
+                v-model="select"
+                label="Оборудование"
+                @change="onChangeEquip"
+            >
+            </v-combobox>
+            <v-text-field
+                v-model="description"
+                label="Описание"
+                outlined
+            ></v-text-field>
+            </v-card-text>
+                <v-form>    
                     <v-btn
-                        color="warning"
-                        @click="login"
-                        large
+                        color="green"
+                        style="color:white"
+                        @click="change"
                     >
-                        Войти
-                    </v-btn>            
-                </form>
+                        Создать
+                    </v-btn>
+                </v-form>
             </v-card>
-            </v-col>
-        </v-row>
-    </v-container>
-</v-layout>
+        </v-col>
+    </v-layout>    
 </template>
+<script>
+import equipmentApi from '@/api/equipmentApi';
+import requestsApi from '@/api/requestsApi';
+import usersApi from '@/api/usersApi';
+export default{
+    async beforeCreate(){
+        const response = await equipmentApi.getEquipment(0)
+            this.data = response.data
+            this.data.forEach(element => {
+                this.equipment.push(element.name)
+        });
+    },
+    data(){
+        return{
+            equipment:[],
+            selEquip:Array,
+            data:[],
+            profile:Array,
+            create:Array,
+        }
+    },
+    methods:{
+        async change(){
+            this.data = []
+            if(this.selEquip != null){
+            this.selEquip.forEach(async element => {
+                const response = await equipmentApi.getEquipmentByName(element)
+                this.data.push(response.data)
+            });
+            }
+            const userData = await usersApi.getUser(localStorage.getItem('user'));
+            this.profile = userData.data
+            const response = await requestsApi.createRequest({"author":this.profile,"audience":this.audience,"equipment":this.data,"resposible":null,"description":this.description,"status":false})
+            this.create = response.data
+            await this.$router.push('/requests')
+        },
+        onChangeEquip(value){
+            this.selEquip = ""
+            this.selEquip = value
+        }
+    },
+}
+</script>

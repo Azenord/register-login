@@ -51,7 +51,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
-
+import usersApi from '@/api/usersApi'
 export default {
   name: 'Login',
 
@@ -66,6 +66,7 @@ export default {
       username: '',
       showPass: false,
       password: '',
+      userProfile:Array,
       rules: {
         required: value => !!value || 'Заполни поле пароля.',
         min: v => v.length >= 4 || 'Минимум 4 символа',
@@ -88,7 +89,15 @@ methods: {
       let username = this.username
       let password = this.password
       this.$store.dispatch('login', { username, password })
-      .then(() => {
+      .then(async () => {
+        const userData = await usersApi.getUser(username);
+        this.userProfile = userData.data
+        if(this.userProfile.roles[0]==="ROLE_ADMIN"){
+          console.log(this.userProfile.roles[0])
+          localStorage.setItem("isAdmin",true)
+        }else{
+          localStorage.setItem("isAdmin",false)
+        }
         this.$router.push('/profile')
       })
       .catch(err => console.log(err))

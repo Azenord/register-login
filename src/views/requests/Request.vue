@@ -24,7 +24,7 @@
                 <p class="pt-3">Аудитория: {{request.audience}}</p>
                 <p class="pt-3">Описание: {{request.description}}</p>
                 <p v-if="request.responsible === null" class="pt-3">Ответственный: Не назначен</p>
-                <p v-else class="pt-3">Ответственный: {{request.responsible}}</p>
+                <p v-else class="pt-3">Ответственный: {{request.responsible.userName}}</p>
                 <template>
                     <p v-for="equip in request.equipment" :key="equip.id" class="pt-3">Оборудование: {{equip.name}}</p>
                 </template>
@@ -59,11 +59,18 @@ export default{
   },
   mounted(){
     this.getRequest();
+    localStorage.removeItem('requestAudience')
+    localStorage.removeItem('requestStatus')
+    localStorage.removeItem('requestDesc')
+    localStorage.removeItem("requestResp")
+    localStorage.removeItem("requestEquip")
   },
   data(){
     return{
     request: Array,
-    id:""
+    data:Array,
+    items:[],
+    id:"",
     }
   },
   methods:{
@@ -81,11 +88,15 @@ export default{
             this.$router.push('/requests')
         }
     },
-    changeRequest(){
+    async changeRequest(){
         this.id = this.$route.params.id
+        
         localStorage.setItem('requestAudience', this.request.audience)
         localStorage.setItem('requestStatus', this.request.status)
         localStorage.setItem('requestDesc', this.request.description)
+        if(this.request.responsible != null){
+            localStorage.setItem("requestResp",this.request.responsible.userName)
+        }
         this.$router.push(`/request/change/${this.id}`)
     },
   }

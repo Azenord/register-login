@@ -46,10 +46,11 @@
           </v-list-item-group>
           </template>
           <template v-else>
-          <v-list-item-group v-model="group" active-class="orange--text text--accent-4">
+            <template v-if="this.isAdmin">
+            <v-list-item-group v-model="group" active-class="orange--text text--accent-4">
             <v-list-item to="/requests">
               <v-list-item-icon>
-                <v-icon>mdi-newspaper-plus</v-icon>
+                <v-icon>mdi-calendar-account-outline</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Список заявок</v-list-item-title>
             </v-list-item>
@@ -69,10 +70,22 @@
             </v-list-item>
             <v-list-item to="/createEquip">
               <v-list-item-icon>
-                <v-icon>mdi-projector-screen</v-icon>
+                <v-icon>mdi-monitor</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Добавление оборудования</v-list-item-title>
             </v-list-item>
+
+            </v-list-item-group>
+            </template>
+          <v-list-item-group v-model="group" active-class="orange--text text--accent-4">
+
+            <v-list-item to="/createRequest">
+              <v-list-item-icon>
+                <v-icon>mdi-newspaper-plus</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Создание заявки</v-list-item-title>
+            </v-list-item>
+
             <v-list-item to="/profile">
               <v-list-item-icon>
                 <v-icon>mdi-account-settings</v-icon>
@@ -98,6 +111,7 @@
     data: () => ({
     drawer: false,
     profile: Array,
+    isAdmin:localStorage.getItem("isAdmin"),
     }),
     computed : {
       isLoggedIn : function(){ return this.$store.getters.isLoggedIn}
@@ -106,8 +120,8 @@
       logout: function () {
         this.$store.dispatch('logout')
         .then(() => {
+          localStorage.removeItem("isAdmin")
           this.$router.push('/login')
-          console.log(localStorage.getItem('token'))
         })
       },
       

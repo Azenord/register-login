@@ -66,14 +66,13 @@ export default{
         this.equip = equipData.data
     },
     async deleteEquip(){
-        /*let isDelete = confirm("Вы действительно хотите удалить это оборудование?");
+        let isDelete = confirm("Вы действительно хотите удалить это оборудование?");
         if(isDelete){
             this.name = this.$route.params.equipment
-            const equipData = await equipmentApi.deleteEquip(this.username);
+            const equipData = await equipmentApi.deleteEquip(this.name);
             this.profile = equipData.data
-            this.$router.push('/equip')
-        }*/
-        alert("В разработке");
+            this.$router.push('/equipment')
+        }
     },
     changeEquip(){
         this.name = this.$route.params.equipment

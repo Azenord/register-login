@@ -20,7 +20,7 @@ export default {
   },
   async deleteEquip(name){
     return await axios
-    .delete(serverUrl + '/admin/equipment/' + name, { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
+    .delete(serverUrl + '/equipments/' + name, { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
       .catch(error => console.log(error))
   },
   async changeEquip(name,equip){
@@ -32,6 +32,6 @@ export default {
     return await axios
     .post(serverUrl + '/equipments/',equip,{ headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
       .catch(error => console.log(error))
-  },
+  }
 }
 
